@@ -1,5 +1,5 @@
 FROM node:lts-alpine AS build-env
-    
+
 # Set the working directory
 WORKDIR /app
 
