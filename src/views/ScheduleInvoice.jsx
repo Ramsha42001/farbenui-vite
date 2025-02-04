@@ -27,15 +27,20 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import dayjs from 'dayjs';
-import { useDispatch } from 'react-redux';
-import { scheduleInvoice } from '../redux/features/schedule/scheduleSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { scheduleInvoice ,getSchedules} from '../redux/features/schedule/scheduleSlice';
 import { previewInvoice } from '../redux/features/preview/previewSlice';
 
 const ScheduleInvoice = () => {
   const dispatch = useDispatch();
   const filename = localStorage.getItem('filename');
+  const token=localStorage.getItem('token');
   const invoiceResponse = JSON.parse(localStorage.getItem('invoicePreview')) || {};
   let invoiceData = JSON.parse(localStorage.getItem('invoiceData'));
+
+  if(!token || !invoiceResponse){
+    navigate('/auth/login');
+  }
 
   const [formData, setFormData] = React.useState({
     customerName: invoiceData.clientName,
@@ -51,6 +56,7 @@ const ScheduleInvoice = () => {
 
   const [scheduleDates, setScheduleDates] = useState([]);
   const [invoiceSchedule,setInvoiceSchedule] = useState([]);
+  const [response,setResponse] = useState([]);
 
   // Handle form field changes
   const handleInputChange = (event) => {
@@ -114,6 +120,17 @@ const ScheduleInvoice = () => {
       console.error('An unexpected error occurred:', err);
     }
   };
+
+ useEffect(() => {
+  const response = dispatch(getSchedules(invoiceResponse.client.email)).then((res) => {
+    setResponse(res.dates);
+  });
+ }, []);
+
+ console.log(response);
+
+
+ 
 
   return (
     <Container
@@ -536,91 +553,35 @@ const ScheduleInvoice = () => {
         }}
         className="mx-1 my-4"
       >
-        <Typography variant="h6" className="font-bold mb-2">
-          Invoice Schedule
-        </Typography>
-        <Divider className="mb-4" />
-        <List>
-          {invoiceSchedule.map((item, index) => (
-            <React.Fragment key={index}>
-              <ListItem
-                sx={{
-                  p: 1,
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.04)', // Subtle hover effect
-                  },
-                }}
-                className="rounded-md"
+        <div className="bg-white rounded-lg shadow-md p-6"> {/* Card styling */}
+      <Typography variant="h6" className="font-bold mb-4 text-xl text-gray-800"> {/* Improved heading */}
+        Invoice Schedule
+      </Typography>
+      <div className="mb-6 border-b border-gray-200"></div> {/* Styled divider */}
+      <ul className="list-none pl-0"> {/* Unordered list for better spacing control */}
+        {response.map((item, index) => (
+          <li key={index} className="py-2 border-b border-gray-200 last:border-b-0"> {/* List item styling */}
+            <div className="flex items-center"> {/* Flexbox for icon and text */}
+              <svg 
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2 text-gray-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
               >
-                <Container
-                  maxWidth={false}
-                  disableGutters
-                  sx={{ display: 'flex', alignItems: 'center', px: 1 }}
-                >
-                  {' '}
-                  <Box sx={{ width: '33%', textAlign: 'left' }}>
-                    <Typography variant="body1" className="font-bold">
-                      {/* Display Month and Time */}
-                      {item.invoiceDate}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: '33%', textAlign: 'center' }}>
-                    <Typography variant="body1">
-                      {/* Display Date */}
-                      {item.invoiceDate}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ width: '33%', textAlign: 'right' }}>
-                  <Typography variant="body1">
-                      {/* Display Time */}
-                      {item.invoiceDate}
-                    </Typography>
-                    {/* <Tooltip title="View">
-                      <IconButton
-                        size="small"
-                        sx={{
-                          color: "#007bff",
-                          "&:hover": {
-                            color: "#0056b3",
-                            backgroundColor: "transparent",
-                          },
-                        }}
-                      >
-                        <VisibilityIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Download">
-                      <IconButton
-                        size="small"
-                        sx={{
-                          color: "#28a745",
-                          "&:hover": {
-                            color: "#1e7e34",
-                            backgroundColor: "transparent",
-                          },
-                        }}
-                      >
-                        <GetAppIcon />
-                      </IconButton>
-                    </Tooltip> */}
-                  </Box>
-                </Container>
-              </ListItem>
-              {index < scheduleDates.length - 1 && (
-                <Divider
-                  sx={{
-                    m: 0,
-                    p: 0,
-                    borderColor: "#e0e0e0",
-                  }}
+                <path
+                  fillRule="evenodd"
+                  d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0c0 .55.22.99.5.99H13.5a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5H6.5a.5.5 0 00-.5.5v1zM6 14a1 1 0 112 0 1 1 0 01-2 0zm7 0a1 1 0 112 0 1 1 0 01-2 0z"
+                  clipRule="evenodd"
                 />
-              )}
-            </React.Fragment>
-          ))}
-        </List>
+              </svg>
+              <Typography variant="body1" className="text-gray-700"> {/* Improved text styling */}
+                {item}
+              </Typography>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
       </Paper>
     </Container>
   );

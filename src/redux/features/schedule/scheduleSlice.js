@@ -1,13 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { scheduleInvoiceApi} from './scheduleApi';
+import { scheduleInvoiceApi, getSchedulesApi  } from './scheduleApi';
 
 const initialState = {
     invoice: null,
     loading: false,
     isLoading: false, // State for background loading
     error: null,            
+    schedules: [],
+    isLoadingSchedule: false,
 };
-
+    
 const scheduleSlice = createSlice({
     name: 'schedule',
     initialState,
@@ -35,6 +37,14 @@ const scheduleSlice = createSlice({
         updateScheduleFailure(state, action) {
             state.error = action.payload;
             state.loading = false;
+        },
+        scheduleSuccess(state, action) {
+            state.schedules = action.payload;
+            state.isLoadingSchedule = false;
+        },
+        scheduleFailure(state, action) {
+            state.error = action.payload;
+            state.isLoadingSchedule = false;
         },
         // Background loading state
         setLoading(state, action) {
@@ -65,6 +75,8 @@ export const {
     setLoadingSchedule,
     generateScheduleSuccess,
     generateScheduleFailure,
+    scheduleSuccess,
+    scheduleFailure,
 } = scheduleSlice.actions;
 
 // Thunk for invoice preview
@@ -85,6 +97,20 @@ export const scheduleInvoice = (invoiceData) => async (dispatch) => {
         }
     }
 };
+
+export const getSchedules = (email) => async (dispatch) => {
+    dispatch(setLoadingSchedule(true));
+    try {
+        const token = localStorage.getItem('token');
+        const schedules = await getSchedulesApi(token, email);
+        // console.log(schedules);
+        return schedules;
+    } catch (error) {
+        dispatch(scheduleFailure(error.message));
+    }
+};
+
+
 
 
 export default scheduleSlice.reducer;
