@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../redux/features/auth/authSlice';
-// import botReducer from '../features/bot/botSlice';
+import botReducer from '../redux/features/bot/botSlice';
 import documentReducer from '../redux/features/document/documentSlice';
 import contractReducer from '../redux/features/contract/contractSlice';
 // import modelReducer from '../features/model/modelSlice';
@@ -12,7 +12,7 @@ const preloadedState = loadState();
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // bot: botReducer,
+    bot: botReducer,
     document: documentReducer,
     contract: contractReducer,
     preview: previewReducer,

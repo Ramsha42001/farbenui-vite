@@ -34,6 +34,7 @@ import { previewInvoice } from '../redux/features/preview/previewSlice';
 const ScheduleInvoice = () => {
   const dispatch = useDispatch();
   const filename = localStorage.getItem('filename');
+  const invoiceResponse = JSON.parse(localStorage.getItem('invoicePreview')) || {};
   let invoiceData = JSON.parse(localStorage.getItem('invoiceData'));
 
   const [formData, setFormData] = React.useState({
@@ -49,6 +50,7 @@ const ScheduleInvoice = () => {
   });
 
   const [scheduleDates, setScheduleDates] = useState([]);
+  const [invoiceSchedule,setInvoiceSchedule] = useState([]);
 
   // Handle form field changes
   const handleInputChange = (event) => {
@@ -102,7 +104,7 @@ const ScheduleInvoice = () => {
       setScheduleDates(schedule); // Update state with the generated schedule
 
       const response = await dispatch(scheduleInvoice(invoiceData));
-      
+      setInvoiceSchedule(response);
       if (response.status === 200) {
         console.log(response);
         alert("Invoice scheduled successfully");
@@ -154,17 +156,18 @@ const ScheduleInvoice = () => {
             textAlign: 'right',
           }}
         >
-          <Typography variant="body2" className="mb-1" sx={{ fontSize: '12px' }}>
+          <Typography variant="body2" className="mb-1 text-left" sx={{ fontSize: '12px' }}>
             <strong className="font-small">Invoice ID:</strong>{' '}
-            {invoiceData.invoiceId}
+            {invoiceResponse.invoice_id}
           </Typography>
           <Typography variant="body2" className="mb-1" sx={{ fontSize: '12px' }}>
-            Date
+          <strong className="font-small">Date:</strong>{' '}
+          {new Date(invoiceResponse.date).toLocaleDateString()}
           </Typography>
         </Box>
         <Typography variant="body2" className="mb-4" sx={{ fontSize: '12px' }}>
-          <strong className="font-medium">Address:</strong>{' '}
-          {new Date(invoiceData.date).toLocaleDateString()}
+        <strong className="font-small">Address:</strong>{' '}
+        {invoiceResponse.client.address}
         </Typography>
 
         {/* Client Information */}
@@ -173,10 +176,10 @@ const ScheduleInvoice = () => {
           className="mb-1"
           sx={{ fontSize: '12px', marginTop: '20px' }}
         >
-          <strong className="font-medium">Bill To:</strong> {invoiceData.clientEmail}
+            <strong className="font-medium"> Bill To: </strong> {invoiceResponse.client.email}
         </Typography>
         <Typography variant="body2" className="mb-1" sx={{ fontSize: '12px' }}>
-        {invoiceData.clientName}
+        {invoiceResponse.client.name}
         </Typography>
 
         <Typography
@@ -248,7 +251,7 @@ const ScheduleInvoice = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {invoiceData.invoiceLineItems.map((item, index) => (
+              {invoiceResponse.line_items.map((item, index) => (
                 <TableRow key={index}>
                     <TableCell
                     component="th"
@@ -262,7 +265,7 @@ const ScheduleInvoice = () => {
                         border: '1px solid black',
                     }}
                     >
-                    {item.itemName}
+                    {item.description }
                     </TableCell>
                     <TableCell
                     align="right"
@@ -295,7 +298,7 @@ const ScheduleInvoice = () => {
                     {item.quantity * item.price}
                     </TableCell>
                 </TableRow>
-                ))} */}
+                ))}
 
               {/* Total Row */}
               <TableRow>
@@ -372,7 +375,7 @@ const ScheduleInvoice = () => {
                   sx={{ width: '50%' }}
                   label="Customer Name"
                   name="customerName"
-                  value={formData.customerName}
+                  value={invoiceResponse.client.name}
                   onChange={handleInputChange}
                   variant="outlined"
                   size="small"
@@ -382,7 +385,7 @@ const ScheduleInvoice = () => {
                   sx={{ width: '50%' }}
                   label="Location"
                   name="location"
-                  value={formData.location}
+                  value={invoiceResponse.client.address}
                   onChange={handleInputChange}
                   variant="outlined"
                   size="small"
@@ -393,7 +396,7 @@ const ScheduleInvoice = () => {
                 fullWidth
                 label="Email ID"
                 name="email"
-                value={formData.email}
+                value={invoiceResponse.client.email}
                 onChange={handleInputChange}
                 variant="outlined"
                 size="small"
@@ -404,7 +407,7 @@ const ScheduleInvoice = () => {
                 fullWidth
                 label="Phone Number"
                 name="phoneNumber"
-                value={formData.phoneNumber}
+                value={invoiceResponse.client.phone}
                 onChange={handleInputChange}
                 variant="outlined"
                 size="small"
@@ -538,7 +541,7 @@ const ScheduleInvoice = () => {
         </Typography>
         <Divider className="mb-4" />
         <List>
-          {scheduleDates.map((item, index) => (
+          {invoiceSchedule.map((item, index) => (
             <React.Fragment key={index}>
               <ListItem
                 sx={{
@@ -561,19 +564,19 @@ const ScheduleInvoice = () => {
                   <Box sx={{ width: '33%', textAlign: 'left' }}>
                     <Typography variant="body1" className="font-bold">
                       {/* Display Month and Time */}
-                      {item.format('MMM')} 
+                      {item.invoiceDate}
                     </Typography>
                   </Box>
                   <Box sx={{ width: '33%', textAlign: 'center' }}>
                     <Typography variant="body1">
                       {/* Display Date */}
-                      {item.format("DD MMM")}
+                      {item.invoiceDate}
                     </Typography>
                   </Box>
                   <Box sx={{ width: '33%', textAlign: 'right' }}>
                   <Typography variant="body1">
                       {/* Display Time */}
-                      {item.format("hh:mm A")}
+                      {item.invoiceDate}
                     </Typography>
                     {/* <Tooltip title="View">
                       <IconButton

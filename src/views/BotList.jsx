@@ -1,12 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Typography, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Chip, Fab } from '@mui/material';
 import { MoreVert, Chat, Edit, Delete, PlayArrow } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { useDispatch, useSelector } from 'react-redux';
+import { listBots } from '../redux/features/bot/botSlice';
 
 const BotList = () => {
   const navigate = useNavigate();
   const [showChatWidget, setShowChatWidget] = useState(false);
+  const dispatch = useDispatch();
+  const [botList, setBotList] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const response = dispatch(listBots(token));
+    console.log(response);
+  }, [dispatch]);
 
   // Dummy data
   const bots = [

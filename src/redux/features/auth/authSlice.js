@@ -54,6 +54,7 @@ export const login = (credentials) => async (dispatch) => {
         const user = await loginApi(credentials);
         dispatch(loginSuccess(user));
         localStorage.setItem('token', user.token);
+        localStorage.setItem('email', credentials.email)
     } catch (error) {
         dispatch(loginFailure(error.message));
     }

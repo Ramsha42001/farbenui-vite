@@ -1,0 +1,19 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/reflected-alpha-445708-j6/farbenui:amd64', '.']
+images:
+- 'gcr.io/reflected-alpha-445708-j6/farbenui:amd64'
+deployments:
+- name: farbenaiui-service
+  platform: cloudrun
+  region: us-central1  # Change to your desired region
+  # Additional deployment configuration can be added here, like:
+  #   - service:  # Optional service settings for Cloud Run
+  #       timeoutSeconds: 300  # Set timeout in seconds
+  #       resources:  # Specify resource requirements
+  #           requests:
+  #               memory: "1Gi"
+  #               cpu: "1"
+  #           limits:
+  #               memory: "2Gi"
+  #               cpu: "2"

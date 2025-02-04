@@ -1,6 +1,7 @@
 // src/features/bot/botSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { insertBotApi, listBotsApi, deleteBotApi, updateBotApi, deployBotApi } from './botApi';
+import { createBotApi, getBotsApi, deleteBotApi, updateBotApi, deployBotApi } from './botApi';
+
 
 const initialState = {
     bot: null,
@@ -104,23 +105,28 @@ export const {
 export const insertBot = (botData) => async (dispatch) => {
     dispatch(insertBotRequest());
     try {
-        const botResponse = await insertBotApi(botData);
+        const token = localStorage.getItem('token');
+        const botResponse = await createBotApi(botData,token);
         dispatch(insertBotSuccess(botResponse));
-        dispatch(listBots(botData.user_name));
     } catch (error) {
         dispatch(insertBotFailure(error.message));
     }
+
 };
 
-export const listBots = (username) => async (dispatch) => {
+export const listBots = (token) => async (dispatch) => {
     dispatch(listBotsRequest());
     try {
-        const botsResponse = await listBotsApi(username);
+        const botsResponse = await getBotsApi(token);
         dispatch(listBotsSuccess(botsResponse));
+        return botsResponse;
     } catch (error) {
         dispatch(listBotsFailure(error.message));
+        return error;
     }
 };
+
+
 
 export const deleteBot = (botId) => async (dispatch) => {
     dispatch(deleteBotRequest());
@@ -137,16 +143,16 @@ export const updateBot = (botId, botData) => async (dispatch) => {
     try {
         const updatedBot = await updateBotApi(botId, botData);
         dispatch(updateBotSuccess(updatedBot));
-        dispatch(listBots(botData.user_name));
     } catch (error) {
         dispatch(updateBotFailure(error.message));
     }
+
 };
 
 export const deployBot = (fileName, userName) => async (dispatch) => {
     dispatch(deployBotRequest());
     try {
-        const updatedBot = await deployBotApi(fileName, userName); // Ensure this API returns the updated bot
+            const updatedBot = await deployBotApi(fileName, userName); // Ensure this API returns the updated bot
         dispatch(deployBotSuccess(updatedBot));
     } catch (error) {
         dispatch(deployBotFailure(error.message));

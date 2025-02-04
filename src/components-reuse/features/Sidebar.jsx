@@ -33,7 +33,7 @@ const Sidebar = () => {
   const [openData, setOpenData] = React.useState(false);
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const [openAgents, setOpenAgents] = React.useState(false);
-  const [open, setOpen] = React.useState(true); // State for sidebar collapse
+  const [open, setOpen] = React.useState(false); // State for sidebar collapse
 
   const handleClickData = () => {
     setOpenData(!openData);
@@ -89,6 +89,23 @@ const Sidebar = () => {
       
       <Divider />
 
+      
+      <Box
+        sx={{
+          mt: 'auto', // Push the box to the bottom
+          display: 'flex',
+          justifyContent: 'right',
+          alignItems: 'center',
+          width: '100%',
+          p: 1,
+        }}
+      >
+        <Tooltip title={open ? 'Collapse' : 'Expand'}  sx={{ pl: open ? 3 : 2, pr: 3 }}>
+          <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
+            {open ? <ChevronLeft /> : <ChevronRight />}
+          </IconButton>
+        </Tooltip>
+      </Box>
       {/* Main List */}
       <List sx={{ flexGrow: 1 }}> {/* Added flexGrow: 1 */}
         {/* Overview */}
@@ -280,22 +297,6 @@ const Sidebar = () => {
       </List>
 
       {/* Bottom Toggle Button */}
-      <Box
-        sx={{
-          mt: 'auto', // Push the box to the bottom
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          p: 1,
-        }}
-      >
-        <Tooltip title={open ? 'Collapse' : 'Expand'}>
-          <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-            {open ? <ChevronLeft /> : <ChevronRight />}
-          </IconButton>
-        </Tooltip>
-      </Box>
     </Drawer>
   );
 };

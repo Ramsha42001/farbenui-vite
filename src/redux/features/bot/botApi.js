@@ -1,23 +1,40 @@
 import network from '../../../services/network';
 
-export const insertBotApi = async (botData) => {
+// API to create a document
+export const createBotApi = async (botData, token) => {
     try {
-        const queryString = new URLSearchParams(botData).toString();
-        const response = await network.get(`/api/bots?${queryString}`);
+        const response = await network.post(
+            '/create-bot',
+            botData,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
         return response.data;
     } catch (error) {
-        throw new Error(error.response?.data?.message || 'Failed to insert bot');
+        throw new Error(error.response?.data?.message || 'Failed to create document');
     }
 };
 
-export const listBotsApi = async (username) => {
+export const getBotsApi = async (token) => {
     try {
-        const response = await network.get(`/api/bots/${username}`);
+        const response = await network.get(
+            '/get-bots',
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+
+        );
         return response.data;
     } catch (error) {
-        throw new Error(error.response?.data?.message || 'Failed to fetch bots');
+        throw new Error(error.response?.data?.message || 'Failed to get bots');
     }
 };
+
 
 export const deleteBotApi = async (botId) => {
     try {

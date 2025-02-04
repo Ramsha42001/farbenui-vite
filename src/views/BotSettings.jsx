@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Select, MenuItem, Button, Paper, Container } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useDispatch,useSelector } from 'react-redux';
+import { insertBot } from '../redux/features/bot/botSlice';
+import { listDocuments } from '../redux/features/document/documentSlice';
 
 const BotSetting = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const bot = location.state?.bot;
+  const dispatch = useDispatch();
 
-  const user = {
-    email: "test@example.com"
-  };
 
-  const documents = [
-    { document_id: 1, filename: "Document 1.pdf" },
-    { document_id: 2, filename: "Document 2.pdf" },
-    { document_id: 3, filename: "Document 3.pdf" }
-  ];
+  const userEmail = localStorage.getItem('email') 
+useEffect(()=>{
+ 
+  console.log(userEmail)
+    dispatch(listDocuments(userEmail));
+    },[dispatch,userEmail]);
+
+    const documents = useSelector(state=>state.document.documents);
+
 
   const [botName, setBotName] = useState('');
   const [prompt, setPrompt] = useState('');
@@ -28,26 +33,23 @@ const BotSetting = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     if (!botName || !prompt || !selectedDocument || !model) {
       setError("Please fill in all required fields.");
       return;
     }
-  
     const botSettings = {
-      email: user.email,
+      email: userEmail,
       bot_name: botName,
       prompt,
       file_name: selectedDocument.filename,
       temperature: parseFloat(temperature),
       model,
     };
-  
     setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      dispatch(insertBot(botSettings));
       console.log("Bot settings:", botSettings);
-      navigate('/bot-list');
+      navigate('/user/bots');
     } catch (err) {
       setError('Failed to create bot');
     } finally {
@@ -63,7 +65,7 @@ const BotSetting = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Typography variant="h4" className="mb-8 font-bold text-gray-800 text-left" style={{marginBottom:"20px"}}>
+          <Typography variant="h4" className="mb-8 font-bold text-gray-800 text-left" style={{ marginBottom: "20px" }}>
             Create Your AI Assistant
           </Typography>
 
@@ -97,16 +99,16 @@ const BotSetting = () => {
                       </Typography>
                       <Select
                         fullWidth
-                        value={selectedDocument ? selectedDocument.document_id : ''}
+                        value={selectedDocument ? selectedDocument.filename : ''}
                         onChange={(e) => {
-                          const doc = documents.find(d => d.document_id === e.target.value);
+                          const doc = documents.find(d => d.filename === e.target.value);
                           setSelectedDocument(doc);
                         }}
                         required
                       >
                         <MenuItem value="">Select a document</MenuItem>
                         {documents.map((doc) => (
-                          <MenuItem key={doc.document_id} value={doc.document_id}>
+                          <MenuItem key={doc.filename} value={doc.filename}>
                             {doc.filename}
                           </MenuItem>
                         ))}

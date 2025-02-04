@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const api = axios.create({
     baseURL: "https://farbenai-server-service-1087119049852.us-central1.run.app",
@@ -16,7 +19,18 @@ api.interceptors.request.use(
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) =>{
+        const navigate = useNavigate();
+
+        if(error.response.status === 401){
+            localStorage.removeItem('token');
+            navigate('/auth/login');
+        }
+
+        Promise.reject(error)
+
+    } 
+
 );
 
 export default api;
