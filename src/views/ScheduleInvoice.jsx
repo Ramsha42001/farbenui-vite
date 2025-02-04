@@ -246,7 +246,7 @@ const ScheduleInvoice = () => {
                     border: '1px solid black',
                   }}
                 >
-                  Total
+                  total
                 </TableCell>
               </TableRow>
             </TableHead>
