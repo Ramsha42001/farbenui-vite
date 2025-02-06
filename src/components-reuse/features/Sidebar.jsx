@@ -34,6 +34,20 @@ const Sidebar = () => {
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const [openAgents, setOpenAgents] = React.useState(false);
   const [open, setOpen] = React.useState(false); // State for sidebar collapse
+  const [activeTab, setActiveTab] = React.useState('Overview');
+
+  const handleClick=(tab)=>{
+    setActiveTab(tab);
+    const listItems = document.querySelectorAll('.MuiListItem-root');
+    listItems.forEach(item => {
+      if(item.textContent === tab) {
+        item.style.backgroundColor = '#e0e0e0'; // Darker gray background for selected tab
+      } else {
+        item.style.backgroundColor = 'transparent';
+      }
+    });
+  }
+
 
   const handleClickData = () => {
     setOpenData(!openData);
@@ -61,7 +75,7 @@ const Sidebar = () => {
   };
 
   const drawerWidth = 240;
-  const collapsedDrawerWidth = 72; // Adjust as needed
+  const collapsedDrawerWidth = 80; // Adjust as needed
 
   return (
     <Drawer
@@ -111,8 +125,11 @@ const Sidebar = () => {
         {/* Overview */}
         <ListItem key="Overview" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={() => handleNavigation('/user/dashboard')}
+            className='hover:bg-gray-100'
+            onClick={() => {
+              handleNavigation('/user/dashboard');
+              handleClick('Overview');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon
@@ -128,8 +145,11 @@ const Sidebar = () => {
         {/* Data */}
         <ListItem key="Data" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={handleClickData}
+            className={`hover:bg-gray-100 ${activeTab === 'Data' ? 'bg-gray-100' : ''}`}
+            onClick={() => {
+              handleClickData();
+              handleClick('Data');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -143,8 +163,11 @@ const Sidebar = () => {
           <List component="div" disablePadding>
             <ListItem key="Documents" disablePadding>
               <ListItemButton
-                className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/data/documents')}
+                className={`hover:bg-gray-100 ${activeTab === 'Documents' ? 'bg-gray-100' : ''}`}
+                onClick={() => {
+                  handleNavigation('/user/data/documents');
+                  handleClick('Documents');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -155,8 +178,11 @@ const Sidebar = () => {
             </ListItem>
             <ListItem key="Contracts" disablePadding>
               <ListItemButton
-                className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/data/invoice')}
+                className={`hover:bg-gray-100 ${activeTab === 'Contracts' ? 'bg-gray-100' : ''}`}
+                onClick={() => {
+                  handleNavigation('/user/data/invoice');
+                  handleClick('Contracts');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -171,8 +197,11 @@ const Sidebar = () => {
         {/* Agent */}
         <ListItem key="Agent" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={handleClickAgents}
+            className={`hover:bg-gray-100 ${activeTab === 'Agent' ? 'bg-gray-100' : ''}`}
+            onClick={() => {
+              handleClickAgents();
+              handleClick('Agent');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -186,8 +215,11 @@ const Sidebar = () => {
           <List component="div" disablePadding>
             <ListItem key="Create Agent" disablePadding>
               <ListItemButton
-                className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/bots/setting')}
+                className={`hover:bg-gray-100 ${activeTab === 'Create Agent' ? 'bg-gray-100' : ''}`}
+                onClick={() => {
+                  handleNavigation('/user/bots/setting');
+                  handleClick('Create Agent');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -198,8 +230,11 @@ const Sidebar = () => {
             </ListItem>
             <ListItem key="Your Agents" disablePadding>
               <ListItemButton
-                className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/bots')}
+                className={`hover:bg-gray-100 ${activeTab === 'Your Agents' ? 'bg-gray-100' : ''}`}
+                onClick={() => {
+                  handleNavigation('/user/bots');
+                  handleClick('Your Agents');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -214,8 +249,11 @@ const Sidebar = () => {
         {/* Invoice */}
         <ListItem key="Invoice" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={handleClickInvoice}
+            className={`hover:bg-gray-100 ${activeTab === 'Invoice' ? 'bg-gray-100' : ''}`}
+            onClick={() => {
+              handleClickInvoice();
+              handleClick('Invoice');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -242,7 +280,10 @@ const Sidebar = () => {
             <ListItem key="Invoice Preview" disablePadding>
               <ListItemButton
                 className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/invoice/preview')}
+                onClick={() => {
+                  handleNavigation('/user/invoice/preview');
+                  handleClick('Invoice Preview');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -254,7 +295,10 @@ const Sidebar = () => {
             <ListItem key="Schedule Invoice" disablePadding>
               <ListItemButton
                 className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/invoice/schedule')}
+                onClick={() => {
+                  handleNavigation('/user/invoice/schedule');
+                  handleClick('Schedule Invoice');
+                }}
                 sx={{ pl: open ? 8 : 2, pr: 3 }}
               >
                 <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -269,8 +313,11 @@ const Sidebar = () => {
         {/* Marketplace */}
         <ListItem key="Marketplace" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={() => handleNavigation('/user/marketplace')}
+            className={`hover:bg-gray-100 ${activeTab === 'Marketplace' ? 'bg-gray-100' : ''}`}
+            onClick={() => {
+              handleNavigation('/user/marketplace');
+              handleClick('Marketplace');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
@@ -283,8 +330,11 @@ const Sidebar = () => {
         {/* Instruction */}
         <ListItem key="Instruction" disablePadding>
           <ListItemButton
-            className="hover:bg-gray-100"
-            onClick={() => handleNavigation('/user/instruction')}
+            className={`hover:bg-gray-100 ${activeTab === 'Instruction' ? 'bg-gray-100' : ''}`}
+              onClick={() => {
+              handleNavigation('/user/instruction');
+              handleClick('Instruction');
+            }}
             sx={{ pl: open ? 3 : 2, pr: 3 }}
           >
             <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
