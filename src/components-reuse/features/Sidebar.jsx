@@ -26,6 +26,7 @@ import {
   Event,
   ChevronLeft,
   ChevronRight,
+  Menu,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,7 +34,7 @@ const Sidebar = () => {
   const [openData, setOpenData] = React.useState(false);
   const [openInvoice, setOpenInvoice] = React.useState(false);
   const [openAgents, setOpenAgents] = React.useState(false);
-  const [open, setOpen] = React.useState(false); // State for sidebar collapse
+  const [open, setOpen] = React.useState(false); 
   const [activeTab, setActiveTab] = React.useState('Overview');
 
   const handleClick=(tab)=>{
@@ -41,7 +42,7 @@ const Sidebar = () => {
     const listItems = document.querySelectorAll('.MuiListItem-root');
     listItems.forEach(item => {
       if(item.textContent === tab) {
-        item.style.backgroundColor = '#e0e0e0'; // Darker gray background for selected tab
+        item.style.backgroundColor = '#e0e0e0';
       } else {
         item.style.backgroundColor = 'transparent';
       }
@@ -75,7 +76,7 @@ const Sidebar = () => {
   };
 
   const drawerWidth = 240;
-  const collapsedDrawerWidth = 80; // Adjust as needed
+  const collapsedDrawerWidth = 80; 
 
   return (
     <Drawer
@@ -106,7 +107,7 @@ const Sidebar = () => {
       
       <Box
         sx={{
-          mt: 'auto', // Push the box to the bottom
+          mt: 'auto',
           display: 'flex',
           justifyContent: 'right',
           alignItems: 'center',
@@ -114,9 +115,9 @@ const Sidebar = () => {
           p: 1,
         }}
       >
-        <Tooltip title={open ? 'Collapse' : 'Expand'}  sx={{ pl: open ? 3 : 2, pr: 3 }}>
+        <Tooltip title={open ? 'Collapse' : 'Expand'}  sx={{ p:2 }}>
           <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
-            {open ? <ChevronLeft /> : <ChevronRight />}
+            {open ? <Menu /> : <Menu />}
           </IconButton>
         </Tooltip>
       </Box>
@@ -265,19 +266,7 @@ const Sidebar = () => {
         </ListItem>
         <Collapse in={openInvoice} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {/* <ListItem key="Generate Invoice" disablePadding>
-              <ListItemButton
-                className="hover:bg-gray-100"
-                onClick={() => handleNavigation('/user/invoice/generate')}
-                sx={{ pl: open ? 8 : 2, pr: 3 }}
-              >
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                  <AddCircleOutline />
-                </ListItemIcon>
-                <ListItemText primary="Generate Invoice" sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem> */}
-            <ListItem key="Invoice Preview" disablePadding>
+            {/* <ListItem key="Invoice Preview" disablePadding>
               <ListItemButton
                 className="hover:bg-gray-100"
                 onClick={() => {
@@ -291,8 +280,8 @@ const Sidebar = () => {
                 </ListItemIcon>
                 <ListItemText primary="Invoice Preview" sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
-            </ListItem>
-            <ListItem key="Schedule Invoice" disablePadding>
+            </ListItem> */}
+            {/* <ListItem key="Schedule Invoice" disablePadding>
               <ListItemButton
                 className="hover:bg-gray-100"
                 onClick={() => {
@@ -306,7 +295,7 @@ const Sidebar = () => {
                 </ListItemIcon>
                 <ListItemText primary="Schedule Invoice" sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
-            </ListItem>
+            </ListItem> */}
           </List>
         </Collapse>
 
