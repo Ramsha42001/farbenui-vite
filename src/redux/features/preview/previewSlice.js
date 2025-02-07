@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { invoicePreviewApi, updateInvoiceDetailsApi, generateInvoiceApi } from './previewApi';
+import { invoicePreviewApi, updateInvoiceDetailsApi, generateInvoiceApi, getInvoiceByEmailApi } from './previewApi';
 
 const initialState = {
     invoice: null,
@@ -48,6 +48,18 @@ const previewSlice = createSlice({
             state.error = action.payload;
             state.loading = false;
         },
+        getInvoiceByEmailRequest(state) {
+            state.loading = true;
+            state.error = null;
+        },
+        getInvoiceByEmailSuccess(state, action) {
+            state.invoice = action.payload;
+            state.loading = false;
+        },
+        getInvoiceByEmailFailure(state, action) {
+            state.error = action.payload;
+            state.loading = false;
+        },
         // Background loading state
         setLoadingInvoice(state, action) {
             state.isLoadingInvoice = action.payload;
@@ -62,6 +74,9 @@ export const {
     updatePreviewRequest,
     updatePreviewSuccess,
     updatePreviewFailure,
+    getInvoiceByEmailRequest,
+    getInvoiceByEmailSuccess,
+    getInvoiceByEmailFailure,
     setLoading,
     generateInvoiceSuccess,
     generateInvoiceFailure,
@@ -110,6 +125,21 @@ export const generateInvoice = (filename) => async (dispatch) => {
         dispatch(generateInvoiceSuccess(response));
     } catch (error) {
         dispatch(generateInvoiceFailure(error.message));
+        if(error.message.includes('401')){
+            localStorage.removeItem('token');
+            window.location.href = '/auth/login';
+        }
+    }
+};
+
+export const getInvoiceByEmail = () => async (dispatch) => {
+    dispatch(getInvoiceByEmailRequest());
+    try {
+        const response = await getInvoiceByEmailApi();
+        console.log('Invoice get response:', response);
+        return response;
+    } catch (error) {
+        dispatch(getInvoiceByEmailFailure(error.message));
         if(error.message.includes('401')){
             localStorage.removeItem('token');
             window.location.href = '/auth/login';

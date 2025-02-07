@@ -54,3 +54,21 @@ export const generateInvoiceApi = async (filename, token) => {
         throw new Error(error.response?.data?.message || 'Failed to generate invoice');
     }
 };
+
+export const getInvoiceByEmailApi = async () => {
+    try{
+        const token = localStorage.getItem('token');
+        const response = await network.get(
+            `/get-invoices`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        console.log('Invoice get response:', response.data);
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response?.data?.message || 'Failed to get invoice');
+    }
+};

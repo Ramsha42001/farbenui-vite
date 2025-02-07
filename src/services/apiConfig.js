@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const api = axios.create({
-    baseURL: "https://farbenai-server-service-1087119049852.us-central1.run.app",
+    baseURL: "http://localhost:8080",
     // timeout: 5000,
     headers: {
     },

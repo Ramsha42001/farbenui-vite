@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Typography, Modal, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Fade } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Fade, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -9,7 +9,7 @@ import ReceiptIcon from '@mui/icons-material/Receipt';
 import { motion } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { listContracts, setLoadingContract, createContract, deleteContract} from '../redux/features/contract/contractSlice';
-import { generateInvoice } from '../redux/features/preview/previewSlice';
+import { generateInvoice, getInvoiceByEmail } from '../redux/features/preview/previewSlice';
 import { useNavigate } from 'react-router-dom';
 
 function Contracts() {
@@ -19,9 +19,10 @@ function Contracts() {
   const [file, setFile] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [token, setToken] = useState(null);
+  const [invoiceFiles, setInvoiceFiles] = useState([]);
+  const [generatingInvoice, setGeneratingInvoice] = useState(null);
   const userEmail = useSelector(state => state?.auth?.user?.email);
   const contracts = useSelector(state => state?.contract?.contracts || []);
-
   const loading = useSelector(state => state?.contract?.loading || false);
   
   useEffect(() => {
@@ -29,14 +30,33 @@ function Contracts() {
     setToken(storedToken);
   }, []);
   
-  useEffect(() => {
+  const fetchContracts = async () => {
     if (token) {
-      dispatch(listContracts(userEmail));
+      await dispatch(listContracts(userEmail));
     }
+  };
+
+  const fetchInvoices = async () => {
+    if (token) {
+      const response = await dispatch(getInvoiceByEmail());
+      if (response) {
+        setInvoiceFiles(response);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchContracts();
+    fetchInvoices();
   }, [token, dispatch]);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    setFile(selectedFile);
+  };
+
+  const checkFile = (filename) => {
+    return invoiceFiles && invoiceFiles.includes(filename);
   };
 
   const handleSubmit = async (e) => {
@@ -49,7 +69,7 @@ function Contracts() {
       formData.append('file', file);
       
       await dispatch(createContract({documentData:formData,token:token}));
-      dispatch(listContracts(userEmail));
+      await fetchContracts();
       setFile(null);
       setShowModal(false);
     } catch (error) {
@@ -59,16 +79,16 @@ function Contracts() {
     }
   };
 
-  const handleDeleteFile = (filename) => {
+  const handleDeleteFile = async (filename) => {
     if (window.confirm('Are you sure you want to delete this file?')) {
-      dispatch(deleteContract(filename,token))
-        .then(() => {
-          window.confirm('File deleted successfully');
-          dispatch(listContracts(userEmail));
-        })
-        .catch((error) => {
-          console.error('Error deleting file:', error);
-        });
+      try {
+        await dispatch(deleteContract(filename,token));
+        await fetchContracts();
+        alert('File deleted successfully');
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        alert('Error deleting file');
+      }
     }
   };
 
@@ -106,11 +126,15 @@ function Contracts() {
 
   const handleGenerateInvoice = async (filename) => {
     try {
+      setGeneratingInvoice(filename);
       await dispatch(generateInvoice(filename));
+      await fetchInvoices();
       alert('Invoice generated successfully!');
     } catch (error) {
       console.error('Error generating invoice:', error);
       alert('Failed to generate invoice. Please try again.');
+    } finally {
+      setGeneratingInvoice(null);
     }
   };
 
@@ -376,23 +400,28 @@ function Contracts() {
             </motion.div>
           </TableCell>
           <TableCell className="py-2 px-4">
-            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+          { checkFile(doc.filename) ? <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
               <IconButton
                 onClick={() => handlePreview(doc.filename)}
                 className="text-green-500 hover:text-green-700"
               >
                 <PreviewIcon />
               </IconButton>
-            </motion.div>
+            </motion.div> : <Typography className="text-gray-500">Invoice not generated</Typography>}
           </TableCell>
           <TableCell className="py-2 px-4">
             <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-              <IconButton
-                onClick={() => handleGenerateInvoice(doc.filename)}
-                className="text-orange-500 hover:text-orange-700"
-              >
-                <ReceiptIcon />
-              </IconButton>
+              { checkFile(doc.filename) ? <Typography className="text-gray-500">Invoice generated</Typography> :
+              generatingInvoice === doc.filename ? (
+                <CircularProgress size={24} className="text-orange-500" />
+              ) : (
+                <IconButton
+                  onClick={() => handleGenerateInvoice(doc.filename)}
+                  className="text-orange-500 hover:text-orange-700"
+                >
+                  <ReceiptIcon />
+                </IconButton>
+              )}
             </motion.div>
           </TableCell>
           <TableCell className="py-2 px-4">
